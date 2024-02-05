@@ -5,58 +5,22 @@ const imgbbUploader = require('imgbb-uploader');
 exports.save = async (req, res) => {
   try {
     // Aquí, 'Imagen' debe coincidir con el nombre del campo en el formulario Angular
-    const { nombreCientifico, nombreColoquial, autor, campoRequerido } = req.body;
+    const { nombreCientifico, nombreColoquial, autor,imagen, campoRequerido } = req.body;
 
-    if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'No se ha recibido ningún archivo',
-      });
-    }
-
-    const imagen = req.files.Imagen;
-    const nombre= imagen.name;
-    console.log(nombre);
-    const campoRequeridoValue = (campoRequerido === '1') ? 'flora' : 'fauna';
-    const uploadPath = `./imagenes/${campoRequeridoValue}`;
-
-    // Crear la carpeta de destino si no existe
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    const filePath = `${uploadPath}/${nombre}`;
-
-    // Mover el archivo a la carpeta de destino
-    imagen.mv(filePath, (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({
-          status: 'error',
-          message: 'Hubo un error al mover el archivo',
-          err,
-        });
-      }
-
-      
-      const result =  imgbbUploader({
-        apiKey: '1a793b348fd640cf34ce09795891b42a', 
-        image: imagen.data, 
-      });
-      // Guardar el nombre del archivo en la base de datos
-      Datos.create({
-        nombreCientifico,
-        nombreColoquial,
-        autor,
-        imagen: nombre.toString(),
-        campoRequerido: campoRequerido
-      });
-
-      return res.json({
-        status: 'success',
-        message: 'Dato registrado correctamente',
-      });
+    // Guardar el nombre del archivo en la base de datos
+    Datos.create({
+      nombreCientifico,
+      nombreColoquial,
+      autor,
+      imagen,
+      campoRequerido: campoRequerido
     });
+
+    return res.json({
+      status: 'success',
+      message: 'Dato registrado correctamente',
+    });
+    ;
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -66,7 +30,6 @@ exports.save = async (req, res) => {
     });
   }
 };
-
 
   exports.update = async (req, res) => {
     const { idDato } = req.params; //variables directamente en la URL
