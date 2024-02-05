@@ -1,5 +1,6 @@
 const { Datos } = require("../db");
 const fs = require('fs');
+const imgbbUploader = require('imgbb-uploader');
 
 exports.save = async (req, res) => {
   try {
@@ -37,6 +38,11 @@ exports.save = async (req, res) => {
         });
       }
 
+      
+      const result =  imgbbUploader({
+        apiKey: '1a793b348fd640cf34ce09795891b42a', 
+        image: imagen.data, 
+      });
       // Guardar el nombre del archivo en la base de datos
       Datos.create({
         nombreCientifico,
